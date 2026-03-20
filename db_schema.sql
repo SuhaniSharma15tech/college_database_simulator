@@ -522,3 +522,93 @@ CREATE INDEX idx_qsub_student      ON quiz_submissions(student_id);
 CREATE INDEX idx_lib_student_week  ON library_visits(student_id, week);
 CREATE INDEX idx_result_student    ON exam_results(student_id);
 CREATE INDEX idx_result_schedule   ON exam_results(schedule_id);
+
+
+USE edumetrics_client;
+
+-- Step 1: Add the column
+ALTER TABLE students
+ADD COLUMN archetype VARCHAR(30) DEFAULT 'consistent_avg';
+
+-- ── SEM 1 (STU001–STU040) ──────────────────────────────────────
+
+UPDATE students SET archetype = 'high_performer' WHERE student_id IN
+('STU002','STU005','STU011','STU018','STU025','STU033');
+
+UPDATE students SET archetype = 'consistent_avg' WHERE student_id IN
+('STU001','STU004','STU007','STU010','STU013','STU016',
+ 'STU019','STU022','STU028','STU034','STU039');
+
+UPDATE students SET archetype = 'late_bloomer' WHERE student_id IN
+('STU008','STU020','STU030','STU037');
+
+UPDATE students SET archetype = 'slow_fader' WHERE student_id IN
+('STU003','STU009','STU015','STU024','STU031','STU038');
+
+UPDATE students SET archetype = 'crammer' WHERE student_id IN
+('STU006','STU017','STU027','STU036');
+
+UPDATE students SET archetype = 'crisis_student' WHERE student_id IN
+('STU012','STU021','STU032','STU040');
+
+UPDATE students SET archetype = 'silent_disengager' WHERE student_id IN
+('STU014','STU023','STU026','STU029','STU035');
+
+-- ── SEM 3 (STU041–STU080) ──────────────────────────────────────
+
+UPDATE students SET archetype = 'high_performer' WHERE student_id IN
+('STU042','STU049','STU055','STU062','STU070','STU078');
+
+UPDATE students SET archetype = 'consistent_avg' WHERE student_id IN
+('STU041','STU044','STU047','STU051','STU056','STU060',
+ 'STU063','STU067','STU072','STU075','STU079');
+
+UPDATE students SET archetype = 'late_bloomer' WHERE student_id IN
+('STU048','STU058','STU068','STU076');
+
+UPDATE students SET archetype = 'slow_fader' WHERE student_id IN
+('STU043','STU052','STU059','STU065','STU073','STU080');
+
+UPDATE students SET archetype = 'crammer' WHERE student_id IN
+('STU046','STU054','STU064','STU074');
+
+UPDATE students SET archetype = 'crisis_student' WHERE student_id IN
+('STU050','STU061','STU069','STU077');
+
+UPDATE students SET archetype = 'silent_disengager' WHERE student_id IN
+('STU045','STU053','STU057','STU066','STU071');
+
+-- ── SEM 5 (STU081–STU120) ──────────────────────────────────────
+
+UPDATE students SET archetype = 'high_performer' WHERE student_id IN
+('STU082','STU089','STU095','STU102','STU110','STU118');
+
+UPDATE students SET archetype = 'consistent_avg' WHERE student_id IN
+('STU081','STU084','STU087','STU091','STU096','STU100',
+ 'STU103','STU107','STU112','STU115','STU119');
+
+UPDATE students SET archetype = 'late_bloomer' WHERE student_id IN
+('STU088','STU098','STU108','STU116');
+
+UPDATE students SET archetype = 'slow_fader' WHERE student_id IN
+('STU083','STU092','STU099','STU105','STU113','STU120');
+
+UPDATE students SET archetype = 'crammer' WHERE student_id IN
+('STU086','STU094','STU104','STU114');
+
+UPDATE students SET archetype = 'crisis_student' WHERE student_id IN
+('STU090','STU101','STU109','STU117');
+
+UPDATE students SET archetype = 'silent_disengager' WHERE student_id IN
+('STU085','STU093','STU097','STU106','STU111');
+
+-- ── Verify ────────────────────────────────────────────────────
+SELECT
+    archetype,
+    COUNT(*) AS total,
+    SUM(CASE WHEN class_id = 'CSE_SEM1_A' THEN 1 ELSE 0 END) AS sem1,
+    SUM(CASE WHEN class_id = 'CSE_SEM3_A' THEN 1 ELSE 0 END) AS sem3,
+    SUM(CASE WHEN class_id = 'CSE_SEM5_A' THEN 1 ELSE 0 END) AS sem5
+FROM students
+GROUP BY archetype
+ORDER BY total DESC;

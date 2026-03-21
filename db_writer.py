@@ -227,6 +227,7 @@ def _build_attendance(students, subjects, class_id, semester, week, wdate):
 
 
 def _build_assignment_submissions(students, assignments, class_id, semester, week):
+    sem_start = _get_sim_state()["semester_start"]
     if not assignments:
         return []
     ev          = _week_modifiers(week, semester)
@@ -266,9 +267,10 @@ def _build_assignment_submissions(students, assignments, class_id, semester, wee
             is_late  = latency > 0
 
             sub_dt = None
-            due    = _get_due_date(asn["assignment_id"])
+            due = _get_due_date(asn["assignment_id"])
             if due:
-                sub_dt = str(date.fromisoformat(str(due)) + timedelta(hours=latency))
+                due_date = _week_monday(sem_start, due)
+                sub_dt = str(due_date + timedelta(hours=latency))
 
             rows.append((
                 asn["assignment_id"], stu["student_id"], class_id,

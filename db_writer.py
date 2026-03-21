@@ -178,10 +178,10 @@ def _get_exam_schedule(class_id, exam_week):
 
 def _get_due_date(assignment_id):
     rows = query(
-        "SELECT due_date FROM assignment_definitions WHERE assignment_id = %s",
+        "SELECT due_week FROM assignment_definitions WHERE assignment_id = %s",
         (assignment_id,)
     )
-    return rows[0]["due_date"] if rows else None
+    return rows[0]["due_week"] if rows else None
 
 def _week_exists(class_id, week):
     rows = query(
